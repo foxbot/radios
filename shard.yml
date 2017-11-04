@@ -1,0 +1,18 @@
+name: radios
+version: 0.1.0
+
+authors:
+  -  <>
+
+dependencies:
+  kemal:
+    github: kemalcr/kemal
+    branch: v0.21.0
+
+targets:
+  radios:
+    main: radios.cr
+
+crystal: 0.23.1
+
+license: MIT
