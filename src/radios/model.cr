@@ -1,7 +1,9 @@
 require "json"
 
-module Model
+module Radios
   struct Radio
+    SELECT_ALL = "SELECT id, name, url, category, genre, country, last_tested, state"
+
     JSON.mapping(
       id: UInt32,
       name: String,
@@ -17,17 +19,37 @@ module Model
       self.from_json(json)
     end
 
+    def self.all(db, state, start, limit)
+      self.transform(db.query(%{
+        #{SELECT_ALL}
+        FROM radios
+        WHERE state = $1
+        ORDERBY id
+        OFFSET $2
+        LIMIT $3;
+      }, state, start, limit))
+    end
+
+    def self.one(db, id)
+      self.transform(db.query(%{
+        #{SELECT_ALL}
+        FROM radios
+        WHERE id = $1
+        LIMIT 1;
+      }, id))
+    end
+
     def self.transform(table)
-      table.to_hash.map do |row|
+      table.each do
         {
-          id: row["id"].as(UInt32),
-          name: row["name"].as(String),
-          url: row["url"].as(String),
-          category: row["category"].as(String),
-          genre: row["genre"].as(String),
-          country: row["country"].as(String),
-          last_tested: Time.parse(row["last_tested"], "%F"),
-          state: row["state"].as(UInt8)
+          id: table.read(UInt32),
+          name: table.read(String),
+          url: table.read(String),
+          category: table.read(String),
+          genre: table.read(String),
+          country: table.read(String),
+          last_tested: table.read(Time),
+          state: table.read(UInt8)
         }
       end
     end

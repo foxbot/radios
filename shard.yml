@@ -8,6 +8,10 @@ dependencies:
   kemal:
     github: kemalcr/kemal
     branch: v0.21.0
+  db:
+    github: crystal-lang/crystal-db
+  pg:
+    github: will/crystal-pg
 
 targets:
   radios:

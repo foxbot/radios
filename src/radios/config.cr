@@ -1,7 +1,9 @@
 module Radios
   class Config
-    def initialize
+    property pgsql : String
 
+    def initialize
+      @pgsql = "nil"
     end
   end
 end

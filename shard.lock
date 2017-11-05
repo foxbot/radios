@@ -1,5 +1,9 @@
 version: 1.0
 shards:
+  db:
+    github: crystal-lang/crystal-db
+    version: 0.4.2
+
   kemal:
     github: kemalcr/kemal
     commit: 
@@ -7,6 +11,10 @@ shards:
   kilt:
     github: jeromegn/kilt
     version: 0.4.0
+
+  pg:
+    github: will/crystal-pg
+    version: 0.13.4
 
   radix:
     github: luislavena/radix
