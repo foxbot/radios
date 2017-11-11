@@ -1,18 +1,18 @@
 # radios
 
-TODO: Write a description here
+The REST API powering DAB Bot's Radio store.
 
 ## Installation
 
-TODO: Write installation instructions here
+Requirements:
+
+- Crystal 0.23
 
 ## Usage
 
-TODO: Write usage instructions here
+Start the Web Server through `radios.cr` or `shards build`.
 
-## Development
-
-TODO: Write development instructions here
+See `.env.sample` for what variables need to be set.
 
 ## Contributing
 
@@ -24,4 +24,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [[your-github-name]](https://github.com/[your-github-name])  - creator, maintainer
+- [foxbot](https://github.com/foxbot)  - creator, maintainer

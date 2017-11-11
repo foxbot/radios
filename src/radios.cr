@@ -7,6 +7,7 @@ module Radios
 
   def self.run(config : Config)
     @@config = config
+    Kemal.config.port = @@config.port
     Kemal.run
   end
 end
