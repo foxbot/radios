@@ -14,6 +14,15 @@ module Radios
     LIMIT $3;
     SQL
 
+    SEARCH = <<-SQL
+    #{SELECT_ALL}
+    FROM RADIOS
+    WHERE name ILIKE $1
+    ORDER BY id
+    OFFSET $2
+    LIMIT $3;
+    SQL
+
     ONE = <<-SQL
     #{SELECT_ALL}
     FROM RADIOS
@@ -25,6 +34,18 @@ module Radios
     INSERT INTO radios
     (name, url, category, genre, country, last_tested, state)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    SQL
+
+    UPDATE = <<-SQL
+    UPDATE RADIOS
+    SET name = $2, url = $3, category = $4, genre = $5,
+      country = $6, last_tested = $7, state = $8
+    WHERE id = $1;
+    SQL
+
+    DELETE = <<-SQL
+    DELETE FROM radios
+    WHERE id = $1;
     SQL
 
     JSON.mapping(
@@ -56,6 +77,10 @@ module Radios
       Radio.from_rs(db.query(ALL, state, start, limit))
     end
 
+    def self.search(db, query, start, limit)
+      Radio.from_rs(db.query(SEARCH, query, start, limit))
+    end
+
     def self.one(db, id)
       Radio.from_rs(db.query(ONE, id))
     end
@@ -65,19 +90,13 @@ module Radios
                 radio.country, radio.last_tested, radio.state)
     end
 
+    def self.update(db, id, radio)
+      db.exec(UPDATE, id, radio.name, radio.url, radio.category, radio.genre,
+                radio.country, radio.last_tested, radio.state)
+    end
 
-    def self.transform(table)
-      pp table
-      {
-        id: table.read(Int32),
-        name: table.read(String),
-        url: table.read(String),
-        category: table.read(String),
-        genre: table.read(String),
-        country: table.read(String),
-        last_tested: table.read(Time),
-        state: table.read(Int32)
-      }
+    def self.remove(db, id)
+      db.exec(DELETE, id)
     end
   end
 end

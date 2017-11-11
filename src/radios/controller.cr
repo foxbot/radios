@@ -45,6 +45,15 @@ module Radios
     name = env.params.url["name"]
     start, limit = 0,0
     Query.paginate
+    query = "#{name}%"
+
+    db = PG.connect @@config.pgsql
+    begin
+      radios = Radio.search(db, query, start, limit)
+    ensure
+      db.close
+    end
+    radios.to_json
   end
 
   # Get by ID
@@ -66,14 +75,35 @@ module Radios
   end
 
   # Modify by ID
-  patch "/radios/:radio" do |env|
+  put "/radios/:radio" do |env|
     id = 0
     Query.id
+
+    body = env.request.body
+    halt env, 400, {"error": "missing body"}.to_json unless body
+    radio = Radio.create_from body
+
+    db = PG.connect @@config.pgsql
+    begin
+      Radio.update(db, id, radio)
+    ensure
+      db.close
+    end
+    radio.to_json
   end
 
   # Delete by ID
   delete "/radios/:radio" do |env|
     id = 0
     Query.id
+
+    db = PG.connect @@config.pgsql
+    begin
+      Radio.remove(db, id)
+    ensure
+      db.close
+    end
+
+    {"ok": "resource deleted"}.to_json
   end
 end
