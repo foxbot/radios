@@ -15,6 +15,7 @@ module Radios
     Query.state
 
     db = PG.connect @@config.pgsql
+    radios = ""
     begin
       radios = Radio.all(db, state, start, limit)
     ensure
@@ -26,6 +27,18 @@ module Radios
 
   # Create
   post "/radios" do |env|
+    body = env.request.body
+    halt env, 400, {"error": "missing body"}.to_json unless body
+    data = Radio.create_from body
+
+    db = PG.connect @@config.pgsql
+    begin
+      Radio.insert(db, data)
+    ensure
+      db.close
+    end
+
+    data.to_json
   end
 
   # Search by Name
@@ -39,6 +52,16 @@ module Radios
   get "/radios/:radio" do |env|
     id = 0
     Query.id
+
+    radio = ""
+    db = PG.connect @@config.pgsql
+    begin
+      radio = Radio.one(db, id)
+      puts radio
+    ensure
+      db.close
+    end
+    radio.to_json
   end
 
   # Modify by ID

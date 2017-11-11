@@ -5,17 +5,17 @@ module Radios
     SELECT_ALL = "SELECT id, name, url, category, genre, country, last_tested, state"
 
     JSON.mapping(
-      id: UInt32,
+      id: {type: Int32, nilable: true},
       name: String,
       url: String,
       category: String,
       genre: String,
       country: String,
       last_tested: Time,
-      state: UInt8
+      state: Int32
     )
 
-    def self.create_from(json : String)
+    def self.create_from(json)
       self.from_json(json)
     end
 
@@ -24,10 +24,11 @@ module Radios
         #{SELECT_ALL}
         FROM radios
         WHERE state = $1
-        ORDERBY id
+        ORDER BY id
         OFFSET $2
         LIMIT $3;
-      }, state, start, limit))
+                              },
+                                state, start, limit))
     end
 
     def self.one(db, id)
@@ -36,20 +37,32 @@ module Radios
         FROM radios
         WHERE id = $1
         LIMIT 1;
-      }, id))
+                              },
+                                id))
     end
+
+    def self.insert(db, radio)
+      db.exec(%{
+        INSERT INTO radios
+        (name, url, category, genre, country, last_tested, state)
+        VALUES ($1, $2, $3, $4, $5, $6, $7);
+              },
+                radio.name, radio.url, radio.category, radio.genre,
+                radio.country, radio.last_tested, radio.state)
+    end
+
 
     def self.transform(table)
       table.each do
         {
-          id: table.read(UInt32),
+          id: table.read(Int32),
           name: table.read(String),
           url: table.read(String),
           category: table.read(String),
           genre: table.read(String),
           country: table.read(String),
           last_tested: table.read(Time),
-          state: table.read(UInt8)
+          state: table.read(Int32)
         }
       end
     end

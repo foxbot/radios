@@ -3,7 +3,7 @@ module Radios
     property pgsql : String
 
     def initialize
-      @pgsql = "nil"
+      @pgsql = ENV["pgsql"]
     end
   end
 end

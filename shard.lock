@@ -2,7 +2,11 @@ version: 1.0
 shards:
   db:
     github: crystal-lang/crystal-db
-    version: 0.4.2
+    version: 0.4.3
+
+  envy:
+    github: petoem/envy
+    commit: efe1c6436939d0c509b0c28e6babd89588119b97
 
   kemal:
     github: kemalcr/kemal
