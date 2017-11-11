@@ -15,7 +15,6 @@ module Radios
     Query.state
 
     db = PG.connect @@config.pgsql
-    radios = ""
     begin
       radios = Radio.all(db, state, start, limit)
     ensure
@@ -53,11 +52,13 @@ module Radios
     id = 0
     Query.id
 
-    radio = ""
     db = PG.connect @@config.pgsql
     begin
       radio = Radio.one(db, id)
-      puts radio
+      if radio.size < 1
+        halt env, 400, {"error": "resource not found"}.to_json
+      end
+      radio = radio[0]
     ensure
       db.close
     end
