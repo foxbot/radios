@@ -1,9 +1,22 @@
-require "./query"
+require "./constants"
 require "./model"
+require "./query"
 require "db"
 require "pg"
+require "jwt"
 
 module Radios
+  def self.authorized?(env, min)
+    token = env.request.headers.fetch("Authorization", "")
+    return {false, {"error": "unspecified Authorization header"}.to_json} unless token
+
+    payload, _ = JWT.decode(token, @@config.secret, "HS256")
+    level = payload["level"]?
+    return {false, {"error": "invalid token"}.to_json} unless level.is_a?(Number)
+
+    return {level >= min, {"error": "not permitted"}.to_json}
+  end
+
   before_all do |env|
     env.response.content_type = "application/json"
   end
@@ -25,6 +38,10 @@ module Radios
   end
 
   # Create
+  before_post "/radios" do |env|
+    auth, err = Radios.authorized?(env, AuthLevel::SUPPORT)
+    halt env, 401, err unless auth
+  end
   post "/radios" do |env|
     body = env.request.body
     halt env, 400, {"error": "missing body"}.to_json unless body
@@ -32,12 +49,12 @@ module Radios
 
     db = PG.connect @@config.pgsql
     begin
-      Radio.insert(db, data)
+      radio = Radio.insert(db, data)[0]
     ensure
       db.close
     end
 
-    data.to_json
+    radio.to_json
   end
 
   # Search by Name
@@ -65,7 +82,7 @@ module Radios
     begin
       radio = Radio.one(db, id)
       if radio.size < 1
-        halt env, 400, {"error": "resource not found"}.to_json
+        halt env, 404, {"error": "resource not found"}.to_json
       end
       radio = radio[0]
     ensure
@@ -75,6 +92,10 @@ module Radios
   end
 
   # Modify by ID
+  before_put "/radios/:radio" do |env|
+    auth, err = Radios.authorized?(env, AuthLevel::SUPPORT)
+    halt env, 401, err unless auth
+  end
   put "/radios/:radio" do |env|
     id = 0
     Query.id
@@ -85,7 +106,7 @@ module Radios
 
     db = PG.connect @@config.pgsql
     begin
-      Radio.update(db, id, radio)
+      radio = Radio.update(db, id, radio)[0]
     ensure
       db.close
     end
@@ -93,6 +114,10 @@ module Radios
   end
 
   # Delete by ID
+  before_delete "/radios/:radio" do |env|
+    auth, err = Radios.authorized?(env, AuthLevel::ADMIN)
+    halt env, 401, err unless auth
+  end
   delete "/radios/:radio" do |env|
     id = 0
     Query.id

@@ -12,8 +12,8 @@ dependencies:
     github: crystal-lang/crystal-db
   pg:
     github: will/crystal-pg
-  envy:
-    github: petoem/envy
+  jwt:
+    github: crystal-community/jwt
 
 targets:
   radios:

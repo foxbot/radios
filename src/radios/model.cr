@@ -3,7 +3,8 @@ require "db"
 
 module Radios
   struct Radio
-    SELECT_ALL = "SELECT id, name, url, category, genre, country, last_tested, state"
+    NAMES = "id, name, url, category, genre, country, last_tested, state"
+    SELECT_ALL = "SELECT #{NAMES}"
 
     ALL = <<-SQL
     #{SELECT_ALL}
@@ -34,13 +35,15 @@ module Radios
     INSERT INTO radios
     (name, url, category, genre, country, last_tested, state)
     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    RETURNING #{NAMES};
     SQL
 
     UPDATE = <<-SQL
     UPDATE RADIOS
     SET name = $2, url = $3, category = $4, genre = $5,
       country = $6, last_tested = $7, state = $8
-    WHERE id = $1;
+    WHERE id = $1
+    RETURNING #{NAMES};
     SQL
 
     DELETE = <<-SQL
@@ -86,13 +89,13 @@ module Radios
     end
 
     def self.insert(db, radio)
-      db.exec(INSERT, radio.name, radio.url, radio.category, radio.genre,
-                radio.country, radio.last_tested, radio.state)
+      Radio.from_rs(db.query(INSERT, radio.name, radio.url, radio.category, radio.genre,
+              radio.country, radio.last_tested, radio.state))
     end
 
     def self.update(db, id, radio)
-      db.exec(UPDATE, id, radio.name, radio.url, radio.category, radio.genre,
-                radio.country, radio.last_tested, radio.state)
+      Radio.from_rs(db.query(UPDATE, id, radio.name, radio.url, radio.category, radio.genre,
+                radio.country, radio.last_tested, radio.state))
     end
 
     def self.remove(db, id)
