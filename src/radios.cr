@@ -1,4 +1,5 @@
 require "kemal"
+require "raven"
 
 module Radios
   VERSION = "0.1.0"

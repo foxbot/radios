@@ -14,6 +14,8 @@ dependencies:
     github: will/crystal-pg
   jwt:
     github: crystal-community/jwt
+  raven:
+    github: sija/raven.cr
 
 targets:
   radios:
