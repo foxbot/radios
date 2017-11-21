@@ -25,7 +25,7 @@ module Radios
   macro cors
     env.response.headers["Access-Control-Allow-Origin"] = "*"
     env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
-    env.response.headers["Access-Control-Allow-Headers"] = "Authorization"
+    env.response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type"
   end
 
   options "/radios" do |env|
