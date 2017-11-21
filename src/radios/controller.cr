@@ -22,6 +22,12 @@ module Radios
     env.response.headers["Access-Control-Allow-Origin"] = "*"
   end
 
+  options "/:any" do |env|
+    env.response.headers["Access-Control-Allow-Origin"] = "*"
+    env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
+    env.response.headers["Access-Control-Allow-Headers"] = "Authorization"
+  end
+
   # List
   get "/radios" do |env|
     start, limit, state = 0,0,0
