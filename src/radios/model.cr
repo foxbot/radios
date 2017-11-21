@@ -15,6 +15,12 @@ module Radios
     LIMIT $3;
     SQL
 
+    COUNT = <<-SQL
+    SELECT COUNT(*)
+    FROM RADIOS
+    WHERE STATE = $1;
+    SQL
+
     SEARCH = <<-SQL
     #{SELECT_ALL}
     FROM RADIOS
@@ -78,6 +84,16 @@ module Radios
 
     def self.all(db, state, start, limit)
       Radio.from_rs(db.query(ALL, state, start, limit))
+    end
+
+    def self.count(db, state)
+      count = 0
+
+      db.query(COUNT, state) do |rs|
+        count = rs.read(Int32)
+      end
+
+      return count
     end
 
     def self.search(db, query, start, limit)

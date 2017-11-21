@@ -51,6 +51,21 @@ module Radios
     radios.to_json
   end
 
+  # Page Count
+  get "/pages" do |env|
+    state = 0
+    Query.state
+
+    db = PG.connect @@config.pgsql
+    begin
+      count = Radio.count(db, state)
+    ensure
+      db.close
+    end
+
+    {"items": count}.to_json}
+  end
+
   # Create
   before_post "/radios" do |env|
     auth, err = Radios.authorized?(env, AuthLevel::SUPPORT)
