@@ -63,7 +63,7 @@ module Radios
       db.close
     end
 
-    {"items": count}.to_json}
+    {"items": count}.to_json
   end
 
   # Create
