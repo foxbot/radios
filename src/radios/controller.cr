@@ -28,7 +28,7 @@ module Radios
     env.response.headers["Access-Control-Allow-Headers"] = "Authorization"
   end
 
-  options "/:any" do |env|
+  options "/radios" do |env|
     cors
   end
   options "/radios/:any" do |env|
