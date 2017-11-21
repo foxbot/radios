@@ -22,10 +22,17 @@ module Radios
     env.response.headers["Access-Control-Allow-Origin"] = "*"
   end
 
-  options "/:any" do |env|
+  macro cors
     env.response.headers["Access-Control-Allow-Origin"] = "*"
     env.response.headers["Access-Control-Allow-Methods"] = "GET, POST, PUT, DELETE, OPTIONS"
     env.response.headers["Access-Control-Allow-Headers"] = "Authorization"
+  end
+
+  options "/:any" do |env|
+    cors
+  end
+  options "/radios/:any" do |env|
+    cors
   end
 
   # List
