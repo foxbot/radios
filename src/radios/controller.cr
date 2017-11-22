@@ -10,7 +10,12 @@ module Radios
     token = env.request.headers.fetch("Authorization", "")
     return {false, {"error": "unspecified Authorization header"}.to_json} unless token
 
-    payload, _ = JWT.decode(token, @@config.secret, "HS256")
+    begin
+      payload, _ = JWT.decode(token, @@config.secret, "HS256")
+    rescue JWT::VerificationError
+      return {false, {"error": "invalid signature"}.to_json}
+    end
+
     level = payload["level"]?
     return {false, {"error": "invalid token"}.to_json} unless level.is_a?(Number)
 
@@ -74,7 +79,11 @@ module Radios
   post "/radios" do |env|
     body = env.request.body
     halt env, 400, {"error": "missing body"}.to_json unless body
-    data = Radio.create_from body
+    begin
+      data = Radio.create_from body
+    rescue JSON::ParseException
+      halt env, 400, {"error": "invalid json"}
+    end
 
     db = PG.connect @@config.pgsql
     begin
@@ -131,7 +140,11 @@ module Radios
 
     body = env.request.body
     halt env, 400, {"error": "missing body"}.to_json unless body
-    radio = Radio.create_from body
+    begin
+      radio = Radio.create_from body
+    rescue JSON::ParseException
+      halt env, 400, {"error": "invalid json"}
+    end
 
     db = PG.connect @@config.pgsql
     begin
