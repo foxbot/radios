@@ -82,7 +82,7 @@ module Radios
     begin
       data = Radio.create_from body
     rescue JSON::ParseException
-      halt env, 400, {"error": "invalid json"}
+      halt env, 400, {"error": "invalid json"}.to_json
     end
 
     db = PG.connect @@config.pgsql
@@ -143,7 +143,7 @@ module Radios
     begin
       radio = Radio.create_from body
     rescue JSON::ParseException
-      halt env, 400, {"error": "invalid json"}
+      halt env, 400, {"error": "invalid json"}.to_json
     end
 
     db = PG.connect @@config.pgsql
